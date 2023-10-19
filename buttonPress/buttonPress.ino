@@ -36,7 +36,6 @@ void loop() {
   arduboy.setCursor(4, 9);
 
   if(arduboy.pressed(LEFT_BUTTON))
-    arduboy.print(F("You pressed the left button"));
     playTone(toneLeft, toneTime);
   if(arduboy.pressed(RIGHT_BUTTON))
     arduboy.print(F("You pressed the right button"));
