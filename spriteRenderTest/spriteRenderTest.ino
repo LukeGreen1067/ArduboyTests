@@ -42,6 +42,8 @@ const unsigned char ending_laughing_body[] PROGMEM = {
 	0x05, 0x05, 0x05, 0x04
 };
 
+//https://community.arduboy.com/t/make-your-own-arduboy-game-part-6-graphics/7929 this is the documentation/ tutorial for the sprite definitions however I will be using drawbitmap which is fine
+
 const unsigned char circuitman[] PROGMEM = { 0x30, 0x9f, 0xe1, 0x4d, 0x4d, 0xe1, 0x9f, 0x30 };
 
 void setup() {
