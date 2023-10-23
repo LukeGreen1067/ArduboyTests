@@ -4,7 +4,7 @@ Arduboy2 a;
 
 #define MAIN_OFFSET	5
 
-#define FRAMERATE 2
+#define FRAMERATE 45
 
 #define FRAME_ONE 0
 #define FRAME_TWO 1
@@ -22,6 +22,28 @@ const uint8_t PROGMEM miningGuyV2Left[][8] = {
 {0x42, 0xb7, 0xea, 0xae, 0xa6, 0xe6, 0xbc, 0x40}
 }; //Left Frame 1 & 2
 
+const unsigned char conveyors[16][8] PROGMEM = {
+	{ 0xff, 0xe7, 0xb3, 0x99, 0x99, 0xb3, 0xe7, 0xff },
+	{ 0xff, 0xb3, 0x99, 0xcd, 0xcd, 0x99, 0xb3, 0xff },
+	{ 0xff, 0x99, 0xcd, 0xe7, 0xe7, 0xcd, 0x99, 0xff },
+	{ 0xff, 0xcd, 0xe7, 0xb3, 0xb3, 0xe7, 0xcd, 0xff },
+	{ 0xff, 0xe7, 0xcd, 0x99, 0x99, 0xcd, 0xe7, 0xff },
+	{ 0xff, 0xcd, 0x99, 0xb3, 0xb3, 0x99, 0xcd, 0xff },
+	{ 0xff, 0x99, 0xb3, 0xe7, 0xe7, 0xb3, 0x99, 0xff },
+	{ 0xff, 0xb3, 0xe7, 0xcd, 0xcd, 0xe7, 0xb3, 0xff },
+	{ 0xff, 0xe7, 0xc3, 0x99, 0xbd, 0xe7, 0xc3, 0xff },
+	{ 0xff, 0xc3, 0x99, 0xbd, 0xe7, 0xc3, 0x99, 0xff },
+	{ 0xff, 0x99, 0xbd, 0xe7, 0xc3, 0x99, 0xbd, 0xff },
+	{ 0xff, 0xbd, 0xe7, 0xc3, 0x99, 0xbd, 0xe7, 0xff },
+	{ 0xff, 0xc3, 0xe7, 0xbd, 0x99, 0xc3, 0xe7, 0xff },
+	{ 0xff, 0x99, 0xc3, 0xe7, 0xbd, 0x99, 0xc3, 0xff },
+	{ 0xff, 0xbd, 0x99, 0xc3, 0xe7, 0xbd, 0x99, 0xff },
+	{ 0xff, 0xe7, 0xbd, 0x99, 0xc3, 0xe7, 0xbd, 0xff }
+};
+
+unsigned char posx = 32;
+unsigned char posy = 36;
+unsigned char animation = 0;
 
 
 void setup() {
@@ -34,6 +56,8 @@ void loop() {
 		return;
 	}
 
+  animation = (animation + 1) % 12;
+
   a.clear();
 
   //a.drawBitmap(8 - MAIN_OFFSET, 11, circuitdude, 48, 56, WHITE);
@@ -42,16 +66,24 @@ void loop() {
 
   //a.drawBitmap(32, 36, ending_laughing_body, 58, 16, WHITE);
 
-  a.drawBitmap(32, 36, miningGuyV2Right[FRAME_ONE], 8, 8, WHITE);
+  //conveyors[DIR_DOWN * 4 + animation / 3]
 
-  if(a.pressed(RIGHT_BUTTON)){
-    a.drawBitmap(32, 36, miningGuyV2Right[FRAME_ONE], 8, 8, WHITE);
-    a.drawBitmap(32, 36, miningGuyV2Right[FRAME_TWO], 8, 8, WHITE);
-  }
-  if(a.pressed(LEFT_BUTTON)){
-    a.drawBitmap(32, 36, miningGuyV2Left[FRAME_ONE], 8, 8, WHITE);
-    a.drawBitmap(32, 36, miningGuyV2Left[FRAME_TWO], 8, 8, WHITE);
-  }
+  a.drawBitmap(posx, posy, conveyors[1 * 4 + animation / 3], 8, 8, WHITE);
+
+  a.println(animation);
+
+//TODO: Need to work out how to get animations look at circuit dude line 1913 for the animation
+//timer need to work out the maths behind the timer so that I can edit it for personal use
+
+  // if(a.pressed(RIGHT_BUTTON)){
+  //   a.drawBitmap(posx, posy, miningGuyV2Right[FRAME_ONE], 8, 8, WHITE);
+  //   a.drawBitmap(posx, posy, miningGuyV2Right[FRAME_TWO], 8, 8, WHITE);
+
+  // }
+  // if(a.pressed(LEFT_BUTTON)){
+  //   a.drawBitmap(posx, posy, miningGuyV2Left[FRAME_ONE], 8, 8, WHITE);
+  //   a.drawBitmap(posx, posy, miningGuyV2Left[FRAME_TWO], 8, 8, WHITE);
+  // }
 
   a.display();
 }
