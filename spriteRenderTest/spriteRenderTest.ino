@@ -4,23 +4,20 @@ Arduboy2 a;
 
 #define MAIN_OFFSET	5
 
-#define FRAMERATE 45
+#define FRAMERATE 60
 
-#define FRAME_ONE 0
-#define FRAME_TWO 1
+#define PLAYER_RIGHT 0
+#define PLAYER_LEFT 1
 
 
 //https://community.arduboy.com/t/make-your-own-arduboy-game-part-6-graphics/7929 this is the documentation/ tutorial for the sprite definitions however I will be using drawbitmap which is fine
 
-const uint8_t PROGMEM miningGuyV2Right[][8] = {
-{0x40, 0xbc, 0x66, 0xa6, 0xae, 0x6a, 0xb7, 0x42}, 
-{0x40, 0xbc, 0xe6, 0xa6, 0xae, 0xea, 0xb7, 0x42}
-}; //Right Frame 1 & 2
-
-const uint8_t PROGMEM miningGuyV2Left[][8] = {
-{0x42, 0xb7, 0x6a, 0xae, 0xa6, 0x66, 0xbc, 0x40},
-{0x42, 0xb7, 0xea, 0xae, 0xa6, 0xe6, 0xbc, 0x40}
-}; //Left Frame 1 & 2
+const uint8_t PROGMEM miningGuyV2[][8] = {
+{0x40, 0xbc, 0x66, 0xa6, 0xae, 0x6a, 0xb7, 0x42},//Player-
+{0x40, 0xbc, 0xe6, 0xa6, 0xae, 0xea, 0xb7, 0x42}, //Right
+{0x42, 0xb7, 0x6a, 0xae, 0xa6, 0x66, 0xbc, 0x40},//Player-
+{0x42, 0xb7, 0xea, 0xae, 0xa6, 0xe6, 0xbc, 0x40}//Left
+}; //0,1 player left 2,3 player right
 
 const unsigned char conveyors[16][8] PROGMEM = {
 	{ 0xff, 0xe7, 0xb3, 0x99, 0x99, 0xb3, 0xe7, 0xff },
@@ -44,6 +41,7 @@ const unsigned char conveyors[16][8] PROGMEM = {
 unsigned char posx = 32;
 unsigned char posy = 36;
 unsigned char animation = 0;
+unsigned char state = PLAYER_LEFT;
 
 
 void setup() {
@@ -56,7 +54,8 @@ void loop() {
 		return;
 	}
 
-  animation = (animation + 1) % 12;
+  animation = (animation + 1) % 16; // max 16 animation frames per second
+
 
   a.clear();
 
@@ -68,22 +67,52 @@ void loop() {
 
   //conveyors[DIR_DOWN * 4 + animation / 3]
 
-  a.drawBitmap(posx, posy, conveyors[1 * 4 + animation / 3], 8, 8, WHITE);
+  // { 0xff, 0xe7, 0xcd, 0x99, 0x99, 0xcd, 0xe7, 0xff },
+	// { 0xff, 0xcd, 0x99, 0xb3, 0xb3, 0x99, 0xcd, 0xff },
+	// { 0xff, 0x99, 0xb3, 0xe7, 0xe7, 0xb3, 0x99, 0xff },
+	// { 0xff, 0xb3, 0xe7, 0xcd, 0xcd, 0xe7, 0xb3, 0xff },
 
-  a.println(animation);
+  // a.drawBitmap(posx + 8, posy, conveyors[4], 8, 8, WHITE);
+  // a.drawBitmap(posx + 16, posy, conveyors[5], 8, 8, WHITE);
+  // a.drawBitmap(posx + 24, posy, conveyors[6], 8, 8, WHITE);
+  // a.drawBitmap(posx + 32, posy, conveyors[7], 8, 8, WHITE);
+
+
+  // a.drawBitmap(posx, posy, conveyors[1 * 4 + animation / 4], 8, 8, WHITE);
+
+  a.drawBitmap(posx, posy-10, miningGuyV2[state * 2 + animation / 8], 8, 8, WHITE);
+
+  // a.println(animation); //Frames
+  // a.println(animation/4); // Animation frames
+  // a.println(state);
+  // a.println(state * 2 + animation / 8);
 
 //TODO: Need to work out how to get animations look at circuit dude line 1913 for the animation
 //timer need to work out the maths behind the timer so that I can edit it for personal use
+// DONE!
 
-  // if(a.pressed(RIGHT_BUTTON)){
-  //   a.drawBitmap(posx, posy, miningGuyV2Right[FRAME_ONE], 8, 8, WHITE);
-  //   a.drawBitmap(posx, posy, miningGuyV2Right[FRAME_TWO], 8, 8, WHITE);
+  a.pollButtons();
 
-  // }
-  // if(a.pressed(LEFT_BUTTON)){
-  //   a.drawBitmap(posx, posy, miningGuyV2Left[FRAME_ONE], 8, 8, WHITE);
-  //   a.drawBitmap(posx, posy, miningGuyV2Left[FRAME_TWO], 8, 8, WHITE);
-  // }
+  a.print(a.cpuLoad());
+
+  if(a.pressed(RIGHT_BUTTON)){
+    state = PLAYER_RIGHT;
+    posx++;
+  }
+  if(a.pressed(LEFT_BUTTON)){
+    state = PLAYER_LEFT;
+    posx--;
+  }
+  if(a.pressed(UP_BUTTON)){
+    posy--;
+  }
+  if(a.pressed(DOWN_BUTTON)){
+    posy++;
+  }
+//This movement is counter intuitive because the grid starts at 0,0 at the top left instead of in the middle
+  if(a.justPressed(A_BUTTON)){
+    animation = (animation + 1) % 16; // max 16 animation frames per second
+  }
 
   a.display();
 }
